@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="一个私人专属的网页导航，安全、简洁、无后端且支持云同步。"
+      content="一个私人专属的网址导航，安全、简洁、无后端且支持云同步。"
     />
     <link rel="shortcut icon" href="favicon.ico" />
     <title>WebNavi</title>
@@ -111,9 +111,13 @@
         items: [],
         get bookMarkJs() {
           return (
-            'javascript: (function() {try {var a = ' +
+            'javascript: (function() {try {if(window.location.href!="' +
+            window.location.href +
+            '"){window.open("' +
+            window.location.href +
+            '");return;};var items = ' +
             JSON.stringify(this.items) +
-            ';comeon(a)} catch (b) {alert(b)}})();'
+            ';comeon(items)} catch (e) {alert(e)}})();'
           )
         },
         comeon(items) {
@@ -126,7 +130,7 @@
             url: this.newItem.url,
           })
         },
-        gotoItem(item) {
+        open(item) {
           window.open(item.url)
         },
         mounted() {
@@ -147,11 +151,14 @@
         :href="bookMarkJs"
         >编辑完请把我拖到书签栏</a
       >
-      <div class="item-container">
-        <div class="item-wrapper" v-for="item in items" @click="gotoItem(item)">
+      <div v-if="items.length>0" class="item-container">
+        <div class="item-wrapper" v-for="item in items" @click="open(item)">
           <img class="item-icon" :src="item.icon" />
           <span class="item-title">{{item.title}}</span>
         </div>
+      </div>
+      <div v-else class="item-container">
+        <span style="flex: 1; text-align: center; font-size: 96px">嗯？</span>
       </div>
       <div v-if="editMode" class="add-wrapper">
         <input placeholder="请输入网址" v-model="newItem.url" />
